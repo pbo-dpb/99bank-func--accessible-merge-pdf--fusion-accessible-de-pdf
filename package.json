@@ -1,0 +1,11 @@
+{
+    "name": "test-pdf-func",
+    "scripts": {
+        "build": "esbuild --bundle --minify --platform=node --target=node12 --outdir=build index.js",
+        "export": "cd build && zip index.js.zip index.js"
+    },
+    "dependencies": {
+        "esbuild": "^0.11.19",
+        "pdf-lib": "^1.17.1"
+    }
+}

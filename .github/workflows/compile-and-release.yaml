@@ -1,0 +1,19 @@
+name: compile-and-release
+on: [workflow_dispatch]
+jobs:
+  compile-assets-and-push-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci && npm run build && npm run export
+      - name: Deploy to Lambda
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ca-central-1
+          function_name: 99bank-func--accessible-merge-pdf--fusion-accessible-de-pdf
+          zip_file: build/index.js.zip
