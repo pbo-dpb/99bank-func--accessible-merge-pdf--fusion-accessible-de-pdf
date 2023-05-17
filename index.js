@@ -1,14 +1,7 @@
 import { PDFDocument } from 'pdf-lib'
 const fs = require('fs');
-const AWS = require('aws-sdk');
-
-async function readDocumentMetadata(body) {
-    const pdfDoc = await PDFDocument.load(body, {
-        updateMetadata: false
-    })
-
-    return pdfDoc.getSubject();
-}
+import * as AWS from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"; // ES Modules import
 
 exports.handler = async function (event, context) {
 
@@ -29,16 +22,20 @@ exports.handler = async function (event, context) {
 
     const mergedPdfBytes = await mainPdf.save();
 
-    var s3 = new AWS.S3({ apiVersion: '2006-03-01' });
-    var params = {
-        Bucket: "99bank-lambda-interchange",
+    const client = new AWS.S3({ region: "REGION" });
+
+    const s3 = new S3Client({
         Region: 'ca-central-1',
+    });
+
+    const command = new PutObjectCommand({
+        Body: mergedPdfBytes,
         Key: event.body.output,
-        Body: mergedPdfBytes
-    }
+        Bucket: "99bank-lambda-interchange",
+    });
+    const response = await client.send(command);
 
-    await s3.upload(params).promise();
 
-    return event.body.output;
+    return response;
 
 }
