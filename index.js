@@ -12,13 +12,10 @@ async function readDocumentMetadata(body) {
 exports.handler = async function (event, context) {
 
     /**
-     * Expects a JSON object with two URLs: `cover` and `main`.
+     * Expects a JSON object with two base64 encoded files: `cover` and `main`.
      */
-    let payload = JSON.parse(event.body);
-
-
-    const coverBytes = await fetch(payload.cover).then(res => res.arrayBuffer())
-    const mainBytes = await fetch(payload.main).then(res => res.arrayBuffer())
+    const coverBytes = Buffer.from(event.cover, 'base64');
+    const mainBytes = Buffer.from(event.main, 'base64');
 
     const coverPdf = await PDFDocument.load(coverBytes)
     const mainPdf = await PDFDocument.load(mainBytes)
