@@ -1,7 +1,7 @@
 {
     "name": "test-pdf-func",
     "scripts": {
-        "build": "esbuild --bundle --minify --platform=node --target=node12 --outdir=build index.js",
+        "build": "esbuild --bundle --minify --external:aws-sdk --platform=node --target=node12 --outdir=build index.js",
         "export": "cd build && zip index.js.zip index.js"
     },
     "dependencies": {

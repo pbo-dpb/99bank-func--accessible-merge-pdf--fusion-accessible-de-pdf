@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib'
 const fs = require('fs');
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 
 async function readDocumentMetadata(body) {
     const pdfDoc = await PDFDocument.load(body, {
@@ -36,7 +36,8 @@ exports.handler = async function (event, context) {
         Key: event.body.output,
         Body: mergedPdfBytes
     }
-    const response = await s3.upload(params).promise();
+
+    await s3.upload(params).promise();
 
     return event.body.output;
 
