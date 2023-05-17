@@ -22,11 +22,7 @@ exports.handler = async function (event, context) {
 
     const mergedPdfBytes = await mainPdf.save();
 
-    const client = new AWS.S3({ region: "REGION" });
-
-    const s3 = new S3Client({
-        Region: 'ca-central-1',
-    });
+    const client = new AWS.S3({ region: "ca-central-1" });
 
     const command = new PutObjectCommand({
         Body: mergedPdfBytes,
