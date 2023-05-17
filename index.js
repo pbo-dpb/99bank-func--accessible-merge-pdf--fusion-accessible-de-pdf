@@ -14,8 +14,8 @@ exports.handler = async function (event, context) {
     /**
      * Expects a JSON object with two base64 encoded files: `cover` and `main`.
      */
-    const coverBytes = Buffer.from(event.cover, 'base64');
-    const mainBytes = Buffer.from(event.main, 'base64');
+    const coverBytes = Buffer.from(event.body.cover, 'base64');
+    const mainBytes = Buffer.from(event.body.main, 'base64');
 
     const coverPdf = await PDFDocument.load(coverBytes)
     const mainPdf = await PDFDocument.load(mainBytes)
