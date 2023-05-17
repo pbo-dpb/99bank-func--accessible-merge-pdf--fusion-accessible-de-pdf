@@ -1,5 +1,6 @@
 import { PDFDocument } from 'pdf-lib'
 const fs = require('fs');
+var AWS = require('aws-sdk');
 
 async function readDocumentMetadata(body) {
     const pdfDoc = await PDFDocument.load(body, {
@@ -12,10 +13,11 @@ async function readDocumentMetadata(body) {
 exports.handler = async function (event, context) {
 
     /**
-     * Expects a JSON object with two base64 encoded files: `cover` and `main`.
+     * Expects a JSON object with two URLs (`cover` and `main`) and an S3 destination key on the interchange bucket.
      */
-    const coverBytes = Buffer.from(event.body.cover, 'base64');
-    const mainBytes = Buffer.from(event.body.main, 'base64');
+
+    const coverBytes = await fetch(event.body.cover).then(res => res.arrayBuffer())
+    const mainBytes = await fetch(event.body.main).then(res => res.arrayBuffer())
 
     const coverPdf = await PDFDocument.load(coverBytes)
     const mainPdf = await PDFDocument.load(mainBytes)
@@ -27,6 +29,15 @@ exports.handler = async function (event, context) {
 
     const mergedPdfBytes = await mainPdf.save();
 
-    return mergedPdfBytes;
+    var s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+    var params = {
+        Bucket: "99bank-lambda-interchange",
+        Region: 'ca-central-1',
+        Key: event.body.output,
+        Body: mergedPdfBytes
+    }
+    const response = await s3.upload(params).promise();
+
+    return event.body.output;
 
 }
