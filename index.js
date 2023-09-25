@@ -6,15 +6,26 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"; // ES Modules i
 exports.handler = async function (event, context) {
 
     /**
-     * Expects a JSON object with two URLs (`cover` and `main`) and an S3 destination key on the interchange bucket.
+     * Expects a JSON object with two URLs ((`first` or `cover`) and `main`) and an S3 destination key on the interchange bucket.
      */
 
-    const coverBytes = await fetch(event.body.cover).then(res => res.arrayBuffer())
+    let firstDocumentBytes;
+    let shouldRemoveMainFirstPage;
+    if (event.body.cover) {
+        firstDocumentBytes = await fetch(event.body.cover).then(res => res.arrayBuffer());
+        shouldRemoveMainFirstPage = true;
+    } else {
+        firstDocumentBytes = await fetch(event.body.first).then(res => res.arrayBuffer());
+        shouldRemoveMainFirstPage = false;
+    }
+
     const mainBytes = await fetch(event.body.main).then(res => res.arrayBuffer())
 
-    const coverPdf = await PDFDocument.load(coverBytes)
+    const coverPdf = await PDFDocument.load(firstDocumentBytes)
     const mainPdf = await PDFDocument.load(mainBytes)
-    mainPdf.removePage(0);
+    if (shouldRemoveMainFirstPage) {
+        mainPdf.removePage(0);
+    }
 
     const copiedPages = await mainPdf.copyPages(coverPdf, coverPdf.getPageIndices());
     let index = 0;
@@ -29,6 +40,7 @@ exports.handler = async function (event, context) {
         Key: event.body.output,
         Bucket: "99bank-lambda-interchange",
     });
+
     const response = await client.send(command);
 
 
