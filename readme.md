@@ -4,7 +4,7 @@ This repository contains the code of an AWS Lambda function that is used to merg
 
 It expects an incoming event with the following structure:
 
-```json
+```
 {
     "cover": "https://example.com/first.pdf", // Could also be "first"
     "main": "https://example.com/second.pdf",
