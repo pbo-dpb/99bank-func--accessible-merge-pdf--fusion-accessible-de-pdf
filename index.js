@@ -10,8 +10,13 @@ export const handler = async (event, context) => {
 
     const cover = event.cover;
     const first = event.first;
+    const main = event.main;
     const outputKey = event.output;
     const bucket = event.bucket;
+
+    if ((!cover && !first) || !main || !outputKey || !bucket) {
+        return { statusCode: 400, body: 'Missing required parameters.' };
+    }
 
     let firstDocumentBytes;
     let shouldRemoveMainFirstPage;
