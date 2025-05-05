@@ -1,11 +1,13 @@
 {
     "name": "test-pdf-func",
     "scripts": {
-        "build": "esbuild --bundle --minify --external:@aws-sdk/client-s3 --platform=node --target=node12 --outdir=build index.js",
-        "export": "cd build && zip index.js.zip index.js"
+        "build": "esbuild --bundle --minify --platform=node --target=node22 --outdir=build index.js",
+        "export": "cd build && zip -r function.zip .",
+        "local": "npm run build && lambda-local -l build/index.js -h handler -e sample-event.json --timeout 15"
     },
     "dependencies": {
-        "esbuild": "^0.11.19",
+        "@aws-sdk/client-s3": "^3.802.0",
+        "esbuild": "^0.25.3",
         "pdf-lib": "^1.17.1"
     }
 }

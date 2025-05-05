@@ -1,7 +1,6 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { PDFDocument } from 'pdf-lib'
-const fs = require('fs');
-import * as AWS from "@aws-sdk/client-s3";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"; // ES Modules import
+
 
 exports.handler = async function (event, context) {
 
@@ -11,15 +10,15 @@ exports.handler = async function (event, context) {
 
     let firstDocumentBytes;
     let shouldRemoveMainFirstPage;
-    if (event.body.cover) {
-        firstDocumentBytes = await fetch(event.body.cover).then(res => res.arrayBuffer());
+    if (event.cover) {
+        firstDocumentBytes = await fetch(event.cover).then(res => res.arrayBuffer());
         shouldRemoveMainFirstPage = true;
     } else {
-        firstDocumentBytes = await fetch(event.body.first).then(res => res.arrayBuffer());
+        firstDocumentBytes = await fetch(event.first).then(res => res.arrayBuffer());
         shouldRemoveMainFirstPage = false;
     }
 
-    const mainBytes = await fetch(event.body.main).then(res => res.arrayBuffer())
+    const mainBytes = await fetch(event.main).then(res => res.arrayBuffer())
 
     const coverPdf = await PDFDocument.load(firstDocumentBytes)
     const mainPdf = await PDFDocument.load(mainBytes)
@@ -33,12 +32,12 @@ exports.handler = async function (event, context) {
 
     const mergedPdfBytes = await mainPdf.save();
 
-    const client = new AWS.S3({ region: "ca-central-1" });
+    const client = new S3Client({});
 
     const command = new PutObjectCommand({
         Body: mergedPdfBytes,
-        Key: event.body.output,
-        Bucket: "99bank-lambda-interchange",
+        Key: event.output,
+        Bucket: event.bucket ? event.bucket : "99bank-lambda-interchange",
     });
 
     const response = await client.send(command);
