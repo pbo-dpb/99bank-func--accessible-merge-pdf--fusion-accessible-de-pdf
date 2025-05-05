@@ -16,4 +16,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ca-central-1
           function_name: 99bank-func--accessible-merge-pdf--fusion-accessible-de-pdf
-          zip_file: build/index.js.zip
+          zip_file: build/function.zip
