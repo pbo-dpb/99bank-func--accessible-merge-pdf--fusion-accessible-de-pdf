@@ -8,6 +8,7 @@ It expects an incoming event with the following structure:
 {
     "cover": "https://example.com/first.pdf", // Could also be "first"
     "main": "https://example.com/second.pdf",
+    "title": "Custom Title for Merged PDF", // Optional
     "output": "99bank-func--accessible-merge-pdf--fusion-accessible-de-pdf/merged.pdf",
     "bucket": "99bank-lambda-interchange"
 }
@@ -17,6 +18,7 @@ Where:
 - `cover`: The URL of the first PDF to merge - used instead of `first`. When `cover` is set, the first page of the `main` PDF will be removed.
 - `first`: The URL of a first PDF - used instead of `cover` if `cover` is not set. When using `first`, the `main` PDF will stay untouched (first page will not be removed).
 - `main`: The URL of the second PDF to merge.
+- `title`: (Optional) The title to set for the merged PDF. If not provided, the title from the `main` PDF will be used.
 - `output`: The S3 path where the merged PDF will be stored.
 - `bucket`: The S3 bucket where the merged PDF will be stored.
 

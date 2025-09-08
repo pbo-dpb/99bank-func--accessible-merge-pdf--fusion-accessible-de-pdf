@@ -13,6 +13,7 @@ export const handler = async (event, context) => {
     const main = event.main;
     const outputKey = event.output;
     const bucket = event.bucket;
+    const title = event.title;
 
     if ((!cover && !first) || !main || !outputKey || !bucket) {
         return { statusCode: 400, body: 'Missing required parameters.' };
@@ -39,6 +40,11 @@ export const handler = async (event, context) => {
     const copiedPages = await mainPdf.copyPages(coverPdf, coverPdf.getPageIndices());
     let index = 0;
     copiedPages.forEach((page) => { mainPdf.insertPage(0 + index, page); index++ });
+
+    if (title) {
+        // Overwrite the title if provided
+        mainPdf.setTitle(title);
+    }
 
     const mergedPdfBytes = await mainPdf.save();
 
